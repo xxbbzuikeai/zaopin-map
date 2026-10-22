@@ -729,13 +729,23 @@ function renderFilters(){
     dsel.onchange=function(){DATE=dsel.value;renderFilters();refreshPins();drawOrigin();renderList();};
   }
   var h='',regions=[],seen={};
-  (D.meta.batches||[]).forEach(function(b){if(b.region&&!seen[b.region]){seen[b.region]=1;regions.push(b.region);}});
-  (D.jobs||[]).forEach(function(j){if(j.region&&!seen[j.region]){seen[j.region]=1;regions.push(j.region);}});
+  function addR(r){if(r&&!seen[r]){seen[r]=1;regions.push(r);}}
+  (D.jobs||[]).forEach(function(j){addR(j.region);});
+  (D.meta.batches||[]).forEach(function(b){addR(b.region);});
+  ALL.forEach(function(j){addR(j.region);});
+  var stat={};
+  regions.forEach(function(r){
+    stat[r]={all:ALL.filter(function(j){return j.region===r;}).length,
+             day:ALL.filter(function(j){return j.region===r&&inDate(j);}).length};
+  });
+  regions.sort(function(a,b){return (stat[b].day-stat[a].day)||(stat[b].all-stat[a].all)||a.localeCompare(b,'zh-Hans-CN');});
   regions.forEach(function(r){
     if(!(r in show))show[r]=true;
-    var n=JOBS.filter(function(j){return j.region===r&&inDate(j);}).length;
-    h+='<label><input type="checkbox" data-r="'+esc(r)+'"'+(show[r]?' checked':'')+'><span class="dot" style="background:'+(COLORS[r]||'#495057')+'"></span>'+esc(r)+'（'+n+'）</label>';
+    var s=stat[r];
+    h+='<label'+(s.day?'':' class="dim"')+' title="'+esc(r)+'：当前日期 '+s.day+' 家，共 '+s.all+' 家'+(s.day?'':'（该日期没有这个区域的记录）')+'">'+
+       '<input type="checkbox" data-r="'+esc(r)+'"'+(show[r]?' checked':'')+'><span class="dot" style="background:'+(COLORS[r]||'#495057')+'"></span>'+esc(r)+'（'+s.day+'）</label>';
   });
+  h+='<div class="fnote">区域自动跟着数据走（共 '+regions.length+' 个），新增区域会自动出现，不用手改</div>';
   $('filters').innerHTML=h;
   Array.prototype.forEach.call($('filters').querySelectorAll('input'),function(cb){
     cb.onchange=function(){show[cb.getAttribute('data-r')]=cb.checked;refreshPins();drawOrigin();renderList();};
