@@ -48,6 +48,18 @@
   </aside>
   <div id="map"></div>
 </div>
+<button id="memoTab" type="button" title="人员备忘录：记录谁要进哪个厂">人员<span class="n" id="memoTabN">0</span></button>
+<aside id="memo" aria-label="人员备忘录">
+  <div class="memo-h"><b>人员备忘录</b><span class="st" id="memoSt"></span><button id="memoClose" type="button" title="收起（Esc）">×</button></div>
+  <div class="memo-form">
+    <input id="memoName" placeholder="姓名" autocomplete="off">
+    <input id="memoTel" placeholder="电话" autocomplete="off">
+    <input id="memoFac" class="fac" list="memoFacDL" placeholder="需要的厂（输入可筛选，也可手填）" autocomplete="off">
+    <datalist id="memoFacDL"></datalist>
+    <button id="memoAdd" type="button">添加人员</button>
+  </div>
+  <div class="memo-list" id="memoList"></div>
+</aside>
 <div id="toast"></div>
 <script src="vendor/leaflet.js"></script>
 <script>
@@ -76,6 +88,7 @@
     window.JOBS_DATA = data;
     if (APP) { try { APP(); } catch(e) { console.error(e); } return; }
     var s = document.createElement('script'); s.src = 'js/app.js'; document.body.appendChild(s);
+    var m = document.createElement('script'); m.src = 'js/memo.js'; document.body.appendChild(m);
   }
   function fail(msg){
     var box = document.getElementById('dp1GateBox'); if(!box) return;
@@ -150,6 +163,7 @@
   })();
 })();
 </script>
+
 
 </body>
 </html>
