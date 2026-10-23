@@ -102,3 +102,42 @@ header .sub, header .meta{display:none}
 
 .filters label.dim{opacity:.42}
 .fnote{margin-top:6px;font-size:11px;color:#8a8f98;line-height:1.5}
+
+/* ==================== 人员备忘录（右侧可收起抽屉） ==================== */
+#memoTab{position:fixed;right:0;top:112px;z-index:940;writing-mode:vertical-rl;letter-spacing:2px;background:#1b2430;color:#fff;border:none;border-radius:8px 0 0 8px;padding:14px 7px 12px;font-size:12.5px;font-family:inherit;cursor:pointer;box-shadow:-2px 0 10px rgba(0,0,0,.18);transition:opacity .15s}
+#memoTab:hover{background:#243447}
+#memoTab .n{display:inline-block;margin-top:8px;background:#2b8a4a;border-radius:9px;padding:1px 5px;font-size:11px;font-weight:700}
+#memoTab.zero .n{background:#7b8896}
+body.memo-open #memoTab{opacity:0;pointer-events:none}
+#memo{position:fixed;right:8px;top:60px;bottom:12px;width:328px;max-width:88vw;z-index:950;display:flex;flex-direction:column;background:rgba(255,255,255,.975);border:1px solid #e0e6ee;border-radius:12px;box-shadow:0 10px 34px rgba(16,32,54,.18);transform:translateX(calc(100% + 18px));transition:transform .22s ease;backdrop-filter:blur(3px)}
+#memo.open{transform:none}
+.memo-h{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid #eef1f5;font-size:13.5px}
+.memo-h b{flex:1 1 auto}
+.memo-h .st{font-size:11.5px;color:#8a97a6;white-space:nowrap}
+#memoClose{border:none;background:#f1f4f8;color:#5b6b7d;border-radius:6px;width:24px;height:24px;cursor:pointer;font-size:15px;line-height:1;flex:0 0 auto}
+#memoClose:hover{background:#e3e9f1;color:#b02a2a}
+.memo-form{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:9px 12px;border-bottom:1px solid #eef1f5}
+.memo-form input{height:30px;border:1px solid #d5dde7;border-radius:6px;padding:0 8px;font-size:12.5px;font-family:inherit;min-width:0;background:#fff}
+.memo-form input:focus{outline:none;border-color:#1c7ed6;box-shadow:0 0 0 2px rgba(28,126,214,.1)}
+.memo-form .fac{grid-column:1 / -1}
+.memo-form button{grid-column:1 / -1;height:30px;border:none;border-radius:6px;background:#1c7ed6;color:#fff;font-size:12.5px;font-family:inherit;cursor:pointer}
+.memo-form button:hover{background:#1864ab}
+.memo-list{flex:1 1 auto;overflow:auto;padding:9px 12px 12px;display:flex;flex-direction:column;gap:7px}
+.memo-empty{font-size:12px;color:#93a1b1;text-align:center;padding:16px 6px;line-height:1.9}
+.memo-empty b{color:#5b6b7d}
+.who{border:1px solid #e3e9f0;border-radius:8px;padding:7px 9px;background:#fff;cursor:pointer;transition:box-shadow .15s,border-color .15s,opacity .15s}
+.who:hover{box-shadow:0 2px 9px rgba(20,40,70,.12);border-color:#c9d9ea}
+.who .w-h{display:flex;align-items:center;gap:8px;font-size:13px}
+.who .w-h b{flex:0 0 auto;max-width:46%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.who .w-p{flex:1 1 auto;font-size:12px;color:#526478;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.who .w-x{border:none;background:none;color:#aab4c0;cursor:pointer;font-size:15px;line-height:1;padding:0 2px;flex:0 0 auto}
+.who .w-x:hover{color:#c92a2a}
+.who .w-f{font-size:11.5px;color:#7b8896;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.who.green{background:#e9f8ee;border-color:#9fdcb4;box-shadow:inset 3px 0 0 #2b8a4a}
+.who.green .w-f{color:#2b8a4a}
+.who.gray{background:#f4f5f7;border-color:#e6e9ed;opacity:.5;filter:grayscale(.45)}
+.who.gray:hover{opacity:.85}
+@media (max-width:760px){#memo{width:300px;right:6px;top:56px;bottom:8px}#memoTab{top:96px}}
+.who .w-f .w-s{float:right;font-size:11px;border-radius:9px;padding:0 6px;margin-left:8px;line-height:1.6}
+.who.green .w-f .w-s{color:#2b8a4a;background:#d3f0dd}
+.who.gray .w-f .w-s{color:#6b7c8f;background:#e6eaee}
