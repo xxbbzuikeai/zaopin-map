@@ -113,6 +113,19 @@ var INCL_KEY='jobsmap_incl_v1', incl={};
 function saveIncl(){try{var ids={};ALL.forEach(function(j){if(incl[j.id]===false)ids[j.id]=0;});
   localStorage.setItem(INCL_KEY,JSON.stringify({ver:(D.meta&&D.meta.generated)||'',ids:ids}));}catch(e){}}
 function isOn(j){return incl[j.id]!==false;}
+
+/* 人员备忘录接口（memo.js）：是否在招 + 变化通知 + 地图定位 */
+window.DP1={_subs:[],
+  jobs:function(){return ALL.slice();},
+  job:function(id){for(var i=0;i<ALL.length;i++){if(ALL[i].id===id)return ALL[i];}return null;},
+  visible:function(id){var j=this.job(id);return j?visible(j):false;},
+  on:function(f){if(typeof f==="function")this._subs.push(f);},
+  fire:function(){for(var i=0;i<this._subs.length;i++){try{this._subs[i]();}catch(e){}}},
+  focus:function(id){var j=this.job(id);if(!j)return;
+    if(j.lng==null){toast("该厂没有坐标，无法定位");return;}
+    activeId=id;markActive();map.setView([j.lat,j.lng],Math.max(map.getZoom(),13));
+    if(pinMarkers[id])pinMarkers[id].openPopup();}
+};
 var CUST_KEY='jobsmap_custom_v1', CUSTOM=[];
 try{CUSTOM=JSON.parse(localStorage.getItem(CUST_KEY)||'[]')||[];}catch(e){CUSTOM=[];}
 function saveCustom(){try{localStorage.setItem(CUST_KEY,JSON.stringify(CUSTOM));}catch(e){}}
@@ -713,6 +726,7 @@ function renderList(){
   $('cnt').textContent='（'+arr.length+(MISS.length?' + 待定位 '+MISS.length:'')+'）';
   updatePickCnt();
   bindList();
+  if(window.DP1)DP1.fire();
 }
 function renderFilters(){
   var dsel=$('dateSel');
