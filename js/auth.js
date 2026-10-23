@@ -140,14 +140,20 @@
     booted = true;
     var g = $('loginGate'); if (g) g.remove();
     chip(user);
+    window.DP1_AUTO = false;   // app.js 注入后不要自己再去请求 api/site（页面在 /app 下）
     loadScript('js/app.js').then(function () {
       return loadScript('js/memo.js');
     }).then(function () {
+      return api('/api/site');
+    }).then(function (site) {
+      if (!site || !site.jobs) throw new Error('没有取到数据');
+      window.boot(site, 'api');
       heartbeat();
       setInterval(heartbeat, 30000);
     }).catch(function (e) {
       console.error('加载页面脚本失败', e);
-      document.getElementById('list').innerHTML = '<div class="warn">页面脚本加载失败，请刷新重试</div>';
+      var el = document.getElementById('list');
+      if (el) el.innerHTML = '<div class="warn">加载地图数据失败，请刷新重试（' + (e && e.message || e) + '）</div>';
     });
   }
 
