@@ -6,6 +6,8 @@
 <title>在招厂区位置地图</title>
 <link rel="stylesheet" href="vendor/leaflet.css">
 <link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/auth.css">
+<script>window.DP1_API_BASE='https://inappropriate-swan-d8c59977a1019-1514742363.ap-shanghai.app.tcloudbase.com';</script>
 </head>
 <body>
 <header>
@@ -61,109 +63,7 @@
   <div class="memo-list" id="memoList"></div>
 </aside>
 <div id="toast"></div>
+<script src="js/auth.js"></script>
 <script src="vendor/leaflet.js"></script>
-<script>
-(function(){
-  var ENC = null;
-  var APP = null;
-  var KEY_STORE = 'dp1_enc_key_v1';
-  var gateShown = false;
-
-  function ub64(s){var b=atob(s),u=new Uint8Array(b.length);for(var i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u;}
-  function b64(u){var s='';for(var i=0;i<u.length;i++)s+=String.fromCharCode(u[i]);return btoa(s);}
-  function el(tag, css, text){var n=document.createElement(tag);if(css)n.style.cssText=css;if(text!=null)n.textContent=text;return n;}
-
-  async function deriveKey(pw, salt, iter){
-    var base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveKey']);
-    return crypto.subtle.deriveKey(
-      {name:'PBKDF2', salt:salt, iterations:iter, hash:'SHA-256'},
-      base, {name:'AES-GCM', length:256}, true, ['decrypt']);
-  }
-  async function decryptWith(key, enc){
-    var pt = await crypto.subtle.decrypt({name:'AES-GCM', iv:ub64(enc.iv)}, key, ub64(enc.ct));
-    return JSON.parse(new TextDecoder().decode(pt));
-  }
-  function boot(data){
-    var g = document.getElementById('dp1Gate'); if(g) g.remove();
-    window.JOBS_DATA = data;
-    if (APP) { try { APP(); } catch(e) { console.error(e); } return; }
-    var s = document.createElement('script'); s.src = 'js/app.js'; document.body.appendChild(s);
-    var m = document.createElement('script'); m.src = 'js/memo.js'; document.body.appendChild(m);
-  }
-  function fail(msg){
-    var box = document.getElementById('dp1GateBox'); if(!box) return;
-    var e = document.getElementById('dp1GateErr');
-    e.textContent = msg; e.style.display = 'block';
-    var inp = document.getElementById('dp1GatePw'); inp.disabled = false; inp.focus();
-  }
-  function showGate(enc, salt, iter){
-    if (gateShown) return; gateShown = true;
-    var wrap = el('div', 'position:fixed;inset:0;z-index:99999;background:rgba(15,23,42,.92);display:flex;align-items:center;justify-content:center;font:14px/1.6 system-ui,-apple-system,"Microsoft YaHei",sans-serif;color:#e5e7eb;');
-    wrap.id = 'dp1Gate';
-    var box = el('div', 'background:#1f2937;border:1px solid #374151;border-radius:14px;padding:28px 26px;width:340px;box-shadow:0 20px 50px rgba(0,0,0,.5);');
-    box.id = 'dp1GateBox';
-    box.appendChild(el('div', 'font-size:17px;font-weight:600;margin-bottom:4px;', '在招厂区位置地图'));
-    box.appendChild(el('div', 'font-size:12px;color:#9ca3af;margin-bottom:18px;', '内部数据，请输入访问密码'));
-    var inp = el('input', 'width:100%;box-sizing:border-box;padding:10px 12px;border-radius:8px;border:1px solid #4b5563;background:#111827;color:#f9fafb;font-size:14px;outline:none;');
-    inp.type = 'password'; inp.id = 'dp1GatePw'; inp.placeholder = '密码'; inp.autocomplete = 'current-password';
-    box.appendChild(inp);
-    var err = el('div', 'display:none;color:#fca5a5;font-size:12px;margin-top:8px;', '');
-    err.id = 'dp1GateErr'; box.appendChild(err);
-    var row = el('label', 'display:flex;align-items:center;gap:6px;font-size:12px;color:#9ca3af;margin:14px 0 16px;');
-    var cb = el('input'); cb.type = 'checkbox'; cb.id = 'dp1GateRemember'; cb.checked = true;
-    row.appendChild(cb); row.appendChild(el('span', null, '记住这台设备（下次不用再输）'));
-    box.appendChild(row);
-    var btn = el('button', 'width:100%;padding:10px;border-radius:8px;border:0;background:#2563eb;color:#fff;font-size:14px;cursor:pointer;', '进入');
-    btn.type = 'button';
-    box.appendChild(btn);
-    var tip = el('div', 'font-size:11px;color:#6b7280;margin-top:12px;', '数据已加密，密码只在你和授权的人之间传递。');
-    box.appendChild(tip);
-    wrap.appendChild(box); document.body.appendChild(wrap);
-
-    async function submit(){
-      var pw = inp.value; if (!pw) { fail('请输入密码'); return; }
-      inp.disabled = true; btn.disabled = true; btn.textContent = '解密中…';
-      try {
-        var key = await deriveKey(pw, salt, iter);
-        var data = await decryptWith(key, enc);
-        if (cb.checked) { try { localStorage.setItem(KEY_STORE, b64(new Uint8Array(await crypto.subtle.exportKey('raw', key)))); } catch(e) {} }
-        boot(data);
-      } catch (e) {
-        btn.disabled = false; btn.textContent = '进入'; inp.disabled = false;
-        fail('密码不对，请重试'); inp.select();
-      }
-    }
-    btn.onclick = submit;
-    inp.onkeydown = function(ev){ if (ev.key === 'Enter') submit(); };
-    inp.focus();
-  }
-
-  (async function start(){
-    var enc = ENC;
-    if (!enc) {
-      try {
-        var r = await fetch('data/site.enc.json', {cache:'no-store'});
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        enc = await r.json();
-      } catch (e) {
-        showGate({}, new Uint8Array(16), 1);
-        fail('找不到加密数据 data/site.enc.json');
-        return;
-      }
-    }
-    var salt = ub64(enc.kdf.salt), iter = enc.kdf.iter;
-    var saved = null; try { saved = localStorage.getItem(KEY_STORE); } catch(e) {}
-    if (saved) {
-      try {
-        var k = await crypto.subtle.importKey('raw', ub64(saved), 'AES-GCM', false, ['decrypt']);
-        boot(await decryptWith(k, enc)); return;
-      } catch(e) { try { localStorage.removeItem(KEY_STORE); } catch(e2) {} }
-    }
-    showGate(enc, salt, iter);
-  })();
-})();
-</script>
-
-
 </body>
 </html>
