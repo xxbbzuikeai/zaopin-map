@@ -141,3 +141,13 @@ body.memo-open #memoTab{opacity:0;pointer-events:none}
 .who .w-f .w-s{float:right;font-size:11px;border-radius:9px;padding:0 6px;margin-left:8px;line-height:1.6}
 .who.green .w-f .w-s{color:#2b8a4a;background:#d3f0dd}
 .who.gray .w-f .w-s{color:#6b7c8f;background:#e6eaee}
+
+/* ===== 左侧整栏滚动：搜索 / 批次 / 日期 / 企业列表 一起上下滚 ===== */
+#side{overflow-y:scroll;overflow-x:hidden;scrollbar-gutter:stable}
+#side>:not(.list){flex:0 0 auto}
+#side .list{flex:0 0 auto;overflow:visible;max-height:none;padding-bottom:18px}
+#side::-webkit-scrollbar{width:10px}
+#side::-webkit-scrollbar-track{background:#eef2f6}
+#side::-webkit-scrollbar-thumb{background:#c3ccd8;border-radius:6px;border:2px solid #eef2f6}
+#side::-webkit-scrollbar-thumb:hover{background:#a9b5c4}
+@media (max-width:760px){#side{overflow-y:auto}}
