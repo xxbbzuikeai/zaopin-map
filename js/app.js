@@ -805,6 +805,7 @@ function showFail(msg){
   if(el)el.innerHTML='<div class="warn">'+msg+'</div>';
   $('meta').textContent='数据未加载';
 }
+window.boot=boot;   /* 账号版：auth.js 拿到云端数据后调用，不要依赖静态 load() */
 function load(){
   var tries=[{url:'api/site',kind:'api'},{url:'data/site.json',kind:'json'}],i=0;
   function step(){
@@ -826,5 +827,5 @@ function load(){
   }
   step();
 }
-load();
+if(window.DP1_AUTO!==false) load();
 })();
