@@ -28,10 +28,14 @@
     if (document.body) document.body.classList.toggle('side-closed', !open);
     if (btn) btn.textContent = open ? '⟨ 收起' : '';
     if (save) { try { localStorage.setItem(KEY, open ? '1' : '0'); } catch (e) { } }
-    // 等宽度过渡结束再让地图重算尺寸（Leaflet 监听 window resize）
-    setTimeout(function () {
-      try { window.dispatchEvent(new Event('resize')); } catch (e) {}
-    }, 240);
+    // 等宽度过渡结束再让地图重算尺寸：Leaflet 不会自己感知容器变宽，
+    // 必须 invalidateSize，否则左/右侧会留一条没瓦片的空白。
+    [80, 240, 420].forEach(function (delay) {
+      setTimeout(function () {
+        try { window.dispatchEvent(new Event('resize')); } catch (e) {}
+        if (window.DP1 && window.DP1.invalidate) { try { window.DP1.invalidate(); } catch (e) {} }
+      }, delay);
+    });
     if (open) syncCount();
   }
 
