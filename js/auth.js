@@ -137,7 +137,15 @@
           base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
       })
       .then(function (k) { return subtle.decrypt({ name: 'AES-GCM', iv: b64u8(enc.iv) }, k, b64u8(enc.ct)); })
-      .then(function (pt) { return JSON.parse(new TextDecoder().decode(pt)); });
+      .then(function (pt) { return gunzipMaybe(new Uint8Array(pt), enc.z); })
+      .then(function (u8) { return JSON.parse(new TextDecoder().decode(u8)); });
+  }
+  /* 密文里可能是 gzip 压缩过的 JSON（省流量）；老格式没有 z 字段就直接解 */
+  function gunzipMaybe(bytes, z) {
+    if (z !== 'gzip') return Promise.resolve(bytes);
+    if (typeof DecompressionStream === 'undefined') return Promise.reject(new Error('浏览器不支持解压，请升级浏览器'));
+    var stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+    return new Response(stream).arrayBuffer().then(function (buf) { return new Uint8Array(buf); });
   }
   /* 优先走加密静态文件；失败再回落到云端接口，保证任何一边坏了都能看 */
   function loadSite() {
