@@ -28,24 +28,9 @@
     if (document.body) document.body.classList.toggle('side-closed', !open);
     if (btn) btn.textContent = open ? '⟨ 收起' : '';
     if (save) { try { localStorage.setItem(KEY, open ? '1' : '0'); } catch (e) { } }
-    // 过渡期间逐帧让 Leaflet 按当前宽度重排：地图跟着侧栏一起平滑变宽，
-    // 而不是动画结束才跳一下（pan:false 保持中心像素不动，不会抽动）。
-    smoothResize(280);
+    // 侧栏是覆盖层，地图容器尺寸始终不变 → 这里不需要 invalidateSize，
+    // 展开/收起时地图完全不动（不重排、不重绘、不位移）。
     if (open) syncCount();
-  }
-
-  function raf(fn) {
-    return (window.requestAnimationFrame || function (f) { return setTimeout(f, 16); })(fn);
-  }
-
-  /* 侧栏宽度在过渡，地图容器也在跟着变，逐帧 invalidateSize 才能贴着动画走 */
-  function smoothResize(ms) {
-    var t0 = Date.now();
-    function step() {
-      if (window.DP1 && window.DP1.invalidate) { try { window.DP1.invalidate(); } catch (e) { } }
-      if (Date.now() - t0 < ms) raf(step);
-    }
-    raf(step);
   }
 
   if (btn) btn.onclick = function () { apply(false, true); };
