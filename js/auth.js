@@ -148,8 +148,15 @@
     }).then(function (site) {
       if (!site || !site.jobs) throw new Error('没有取到数据');
       window.boot(site, 'api');
+      /* 省资源点：心跳 30s → 120s；页面切到后台时暂停，切回来立刻补一次 */
       heartbeat();
-      setInterval(heartbeat, 30000);
+      var hbTimer = setInterval(function () {
+        if (document.hidden) return;
+        heartbeat();
+      }, 120000);
+      document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) heartbeat();
+      });
     }).catch(function (e) {
       console.error('加载页面脚本失败', e);
       var el = document.getElementById('list');
