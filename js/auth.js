@@ -29,7 +29,7 @@
     g.innerHTML =
       '<div class="lg-card">' +
       '<div class="lg-logo">在招厂区位置地图</div>' +
-      '<div class="lg-sub">内部数据 · 请先登录 &nbsp;·&nbsp; <a href="/admin">管理员后台</a></div>' +
+      '<div class="lg-sub">内部数据 · 请先登录 &nbsp;·&nbsp; <a href="admin.html">管理员后台</a></div>' +
       '<div class="lg-tabs"><button type="button" data-tab="login" class="on">登录</button>' +
       '<button type="button" data-tab="reg">注册</button></div>' +
       '<form id="lgForm">' +
@@ -121,6 +121,41 @@
     });
   }
 
+  /* ---------------- 静态加密数据（放 GitHub Pages，登录后拿口令解密） ---------------- */
+  function b64u8(s) {
+    var b = atob(s), u = new Uint8Array(b.length);
+    for (var i = 0; i < b.length; i++) u[i] = b.charCodeAt(i);
+    return u;
+  }
+  function decryptSite(enc, keyText) {
+    var subtle = window.crypto && window.crypto.subtle;
+    if (!subtle) return Promise.reject(new Error('浏览器不支持解密'));
+    var enc8 = new TextEncoder();
+    return subtle.importKey('raw', enc8.encode(keyText), 'PBKDF2', false, ['deriveKey'])
+      .then(function (base) {
+        return subtle.deriveKey({ name: 'PBKDF2', salt: b64u8(enc.kdf.salt), iterations: enc.kdf.iter, hash: 'SHA-256' },
+          base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+      })
+      .then(function (k) { return subtle.decrypt({ name: 'AES-GCM', iv: b64u8(enc.iv) }, k, b64u8(enc.ct)); })
+      .then(function (pt) { return JSON.parse(new TextDecoder().decode(pt)); });
+  }
+  /* 优先走加密静态文件；失败再回落到云端接口，保证任何一边坏了都能看 */
+  function loadSite() {
+    return fetch('data/site.enc.json', { cache: 'no-cache' })
+      .then(function (r) { if (!r.ok) throw new Error('没有静态数据'); return r.json(); })
+      .then(function (enc) {
+        if (!enc || !enc.ct || !enc.kdf) throw new Error('静态数据格式不对');
+        return api('/api/sitekey').then(function (j) {
+          if (!j || !j.key) throw new Error('还没有拿到数据口令');
+          return decryptSite(enc, j.key);
+        });
+      })
+      .catch(function (e) {
+        console.warn('静态数据不可用，改用接口：', e && e.message);
+        return api('/api/site');
+      });
+  }
+
   function heartbeat() {
     api('/api/heartbeat', { method: 'POST' }).then(function (j) {
       if (j._code === 401) {
@@ -144,7 +179,7 @@
     loadScript('js/app.js').then(function () {
       return loadScript('js/memo.js');
     }).then(function () {
-      return api('/api/site');
+      return loadSite();
     }).then(function (site) {
       if (!site || !site.jobs) throw new Error('没有取到数据');
       window.boot(site, 'api');
