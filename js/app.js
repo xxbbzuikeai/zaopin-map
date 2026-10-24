@@ -617,20 +617,22 @@ function popupHtml(j){
   return h;
 }
 
-/* 鼠标移到厂区点上：弹窗自动出现在点位上方；移开就收起 */
-var HOVER_J=null;
+/* 鼠标移到厂区点上：弹窗自动出现在点位上方；移开就收起。
+   但如果这个点是被「点击」打开的（PIND），移开鼠标也不关，方便看详情。 */
+var HOVER_J=null,PIND=null;
 function popupHoverBind(m,j){
   m.on('mouseover',function(){HOVER_J=j.id;activeId=j.id;markActive();m.openPopup();});
   m.on('mouseout',function(){HOVER_J=null;
-    setTimeout(function(){if(HOVER_J===null)map.closePopup();},300);});
+    if(PIND===j.id)return;
+    setTimeout(function(){if(HOVER_J===null&&PIND===null)map.closePopup();},300);});
   m.on('popupopen',function(ev){var el=ev&&ev.popup&&ev.popup.getElement&&ev.popup.getElement();
-    if(!el)return;el.onmouseenter=function(){HOVER_J=j.id;};el.onmouseleave=function(){HOVER_J=null;map.closePopup();};});
+    if(!el)return;el.onmouseenter=function(){HOVER_J=j.id;};el.onmouseleave=function(){HOVER_J=null;if(PIND===j.id)return;map.closePopup();};});
 }
 JOBS.forEach(function(j){
   var c=COLORS[j.region]||'#495057';
   var m=L.marker([j.lat,j.lng],{icon:L.divIcon({className:'pinwrap',html:'<div class="pin" style="background:'+c+'">'+j.no+'</div>',iconSize:[24,24],iconAnchor:[12,12],popupAnchor:[0,-12]})});
   m.bindPopup(function(){return popupHtml(j);},{maxWidth:360,minWidth:290,autoPan:true});
-  m.on('click',function(){activeId=j.id;markActive();m.openPopup();});
+  m.on('click',function(){PIND=j.id;activeId=j.id;markActive();m.openPopup();});
   popupHoverBind(m,j);
   m.jid=j.id;
   pinMarkers[j.id]=m;
