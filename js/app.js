@@ -114,6 +114,10 @@ function saveIncl(){try{var ids={};ALL.forEach(function(j){if(incl[j.id]===false
   localStorage.setItem(INCL_KEY,JSON.stringify({ver:(D.meta&&D.meta.generated)||'',ids:ids}));}catch(e){}}
 function isOn(j){return incl[j.id]!==false;}
 
+/* 定位/选点的小窗只显示 3 秒，别一直挡着地图 */
+var POPUP_MS=3000,POPUP_T=null;
+function popupBrief(m,ms){if(!m)return;try{if(POPUP_T)clearTimeout(POPUP_T);m.openPopup();
+  POPUP_T=setTimeout(function(){try{map.closePopup();}catch(e){}},ms||POPUP_MS);}catch(e){}}
 /* 人员备忘录接口（memo.js）：是否在招 + 变化通知 + 地图定位 */
 window.DP1={_subs:[],
   jobs:function(){return ALL.slice();},
@@ -125,7 +129,7 @@ window.DP1={_subs:[],
   focus:function(id){var j=this.job(id);if(!j)return;
     if(j.lng==null){toast("该厂没有坐标，无法定位");return;}
     activeId=id;markActive();map.setView([j.lat,j.lng],Math.max(map.getZoom(),13));
-    if(pinMarkers[id])pinMarkers[id].openPopup();}
+    if(pinMarkers[id])popupBrief(pinMarkers[id],3000);}
 };
 var CUST_KEY='jobsmap_custom_v1', CUSTOM=[];
 try{CUSTOM=JSON.parse(localStorage.getItem(CUST_KEY)||'[]')||[];}catch(e){CUSTOM=[];}
@@ -634,7 +638,7 @@ function drawOrigin(){
   if(!origin)return;
   var isSug=origin.src==='local'||origin.src==='online'||origin.src==='custom';
   originMarker=L.marker([origin.lat,origin.lng],{icon:L.divIcon({className:'pinwrap',html:'<div class="pin-o"></div>',iconSize:[18,18],iconAnchor:[9,9]})}).addTo(map);
-  originMarker.bindPopup('<div class="pp"><b>起点：'+esc(origin.name)+'</b><div class="pp-a">'+origin.lat.toFixed(4)+', '+origin.lng.toFixed(4)+'（'+esc(origin.kind||'')+'）</div></div>').openPopup();
+  originMarker.bindPopup('<div class="pp"><b>起点：'+esc(origin.name)+'</b><div class="pp-a">'+origin.lat.toFixed(4)+', '+origin.lng.toFixed(4)+'（'+esc(origin.kind||'')+'）</div></div>');popupBrief(originMarker,3000);
   lineLayer.clearLayers();
   var arr=JOBS.filter(function(j){return visible(j);}).map(function(j){return {j:j,d:dist([origin.lat,origin.lng],[j.lat,j.lng])};}).sort(function(a,b){return a.d-b.d;});
   arr.slice(0,12).forEach(function(o){
