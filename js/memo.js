@@ -139,7 +139,13 @@
     }
     if (el.n) el.n.textContent = String(nGreen);
     if (el.st) el.st.textContent = rows.length ? ('在招 ' + nGreen + ' / 共 ' + rows.length) : '';
-    if (el.tab) el.tab.classList.toggle('zero', !nGreen);
+    if (el.tab) {
+      el.tab.classList.toggle('zero', !nGreen);
+      el.tab.classList.toggle('live', nGreen > 0);
+      el.tab.title = nGreen > 0
+        ? ('人员备忘录：有 ' + nGreen + ' 个人的厂正在招（点开查看）')
+        : '人员备忘录：记录谁要进哪个厂';
+    }
     fillDatalist();
   }
 
