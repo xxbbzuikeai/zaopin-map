@@ -164,7 +164,8 @@
       $('main').style.display = 'block';
       bind();
       load();
-      timer = setInterval(function () { if (isAdmin) load(); }, 5000);
+      /* 后台每 30 秒刷新一次（页面隐藏时暂停），减少云函数调用 */
+      timer = setInterval(function () { if (isAdmin && !document.hidden) load(); }, 30000);
     }).catch(function () { showLogin('连接服务器失败'); });
   }
 
