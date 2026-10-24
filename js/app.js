@@ -115,7 +115,7 @@ function saveIncl(){try{var ids={};ALL.forEach(function(j){if(incl[j.id]===false
 function isOn(j){return incl[j.id]!==false;}
 
 /* 定位/选点的小窗只显示 3 秒，别一直挡着地图 */
-var POPUP_MS=3000,POPUP_T=null;
+var POPUP_MS=2000,POPUP_T=null;
 function popupBrief(m,ms){if(!m)return;try{if(POPUP_T)clearTimeout(POPUP_T);m.openPopup();
   POPUP_T=setTimeout(function(){try{map.closePopup();}catch(e){}},ms||POPUP_MS);}catch(e){}}
 /* 人员备忘录接口（memo.js）：是否在招 + 变化通知 + 地图定位 */
@@ -638,7 +638,7 @@ function drawOrigin(){
   if(!origin)return;
   var isSug=origin.src==='local'||origin.src==='online'||origin.src==='custom';
   originMarker=L.marker([origin.lat,origin.lng],{icon:L.divIcon({className:'pinwrap',html:'<div class="pin-o"></div>',iconSize:[18,18],iconAnchor:[9,9]})}).addTo(map);
-  originMarker.bindPopup('<div class="pp"><b>起点：'+esc(origin.name)+'</b><div class="pp-a">'+origin.lat.toFixed(4)+', '+origin.lng.toFixed(4)+'（'+esc(origin.kind||'')+'）</div></div>');popupBrief(originMarker,3000);
+  originMarker.bindPopup('<div class="pp"><b>起点：'+esc(origin.name)+'</b><div class="pp-a">'+origin.lat.toFixed(4)+', '+origin.lng.toFixed(4)+'（'+esc(origin.kind||'')+'）</div></div>');popupBrief(originMarker,2000);
   lineLayer.clearLayers();
   var arr=JOBS.filter(function(j){return visible(j);}).map(function(j){return {j:j,d:dist([origin.lat,origin.lng],[j.lat,j.lng])};}).sort(function(a,b){return a.d-b.d;});
   arr.slice(0,12).forEach(function(o){
