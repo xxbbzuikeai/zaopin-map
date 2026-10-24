@@ -624,7 +624,7 @@ function popupHoverBind(m,j){
   m.on('mouseover',function(){HOVER_J=j.id;activeId=j.id;markActive();m.openPopup();});
   m.on('mouseout',function(){HOVER_J=null;
     if(PIND===j.id)return;
-    setTimeout(function(){if(HOVER_J===null&&PIND===null)map.closePopup();},300);});
+    setTimeout(function(){if(HOVER_J===null&&PIND!==j.id)map.closePopup();},300);});
   m.on('popupopen',function(ev){var el=ev&&ev.popup&&ev.popup.getElement&&ev.popup.getElement();
     if(!el)return;el.onmouseenter=function(){HOVER_J=j.id;};el.onmouseleave=function(){HOVER_J=null;if(PIND===j.id)return;map.closePopup();};});
 }
