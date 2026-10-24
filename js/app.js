@@ -121,7 +121,6 @@ window.DP1={_subs:[],
   visible:function(id){var j=this.job(id);return j?visible(j):false;},
   on:function(f){if(typeof f==="function")this._subs.push(f);},
   fire:function(){for(var i=0;i<this._subs.length;i++){try{this._subs[i]();}catch(e){}}},
-  invalidate:function(){try{map.invalidateSize({pan:false});}catch(e){}},
   focus:function(id){var j=this.job(id);if(!j)return;
     if(j.lng==null){toast("该厂没有坐标，无法定位");return;}
     activeId=id;markActive();map.setView([j.lat,j.lng],Math.max(map.getZoom(),13));
