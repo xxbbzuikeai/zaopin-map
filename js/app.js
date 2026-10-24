@@ -129,7 +129,7 @@ window.DP1={_subs:[],
   focus:function(id){var j=this.job(id);if(!j)return;
     if(j.lng==null){toast("该厂没有坐标，无法定位");return;}
     activeId=id;markActive();map.setView([j.lat,j.lng],Math.max(map.getZoom(),13));
-    if(pinMarkers[id])popupBrief(pinMarkers[id],3000);}
+    if(pinMarkers[id])pinMarkers[id].openPopup();}
 };
 var CUST_KEY='jobsmap_custom_v1', CUSTOM=[];
 try{CUSTOM=JSON.parse(localStorage.getItem(CUST_KEY)||'[]')||[];}catch(e){CUSTOM=[];}
