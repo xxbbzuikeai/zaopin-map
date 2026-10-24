@@ -109,6 +109,18 @@ header .sub, header .meta{display:none}
 #memoTab .n{display:inline-block;margin-top:8px;background:#2b8a4a;border-radius:9px;padding:1px 5px;font-size:11px;font-weight:700}
 #memoTab.zero .n{background:#7b8896}
 body.memo-open #memoTab{opacity:0;pointer-events:none}
+
+/* 未展开时：有人要的厂正在招 → 标签左上角亮个小绿方块（呼吸光晕，不挡内容） */
+#memoTab .dot{display:none;position:absolute;top:-4px;left:-4px;width:13px;height:13px;border-radius:4px;
+  background:#2b8a4a;border:2px solid #fff;box-sizing:content-box}
+#memoTab.live .dot{display:block;animation:memoPulse 2.2s ease-out infinite}
+#memoTab.live{background:#20603a}
+@keyframes memoPulse{
+  0%{box-shadow:0 0 0 0 rgba(43,138,74,.55)}
+  70%{box-shadow:0 0 0 8px rgba(43,138,74,0)}
+  100%{box-shadow:0 0 0 0 rgba(43,138,74,0)}
+}
+@media (prefers-reduced-motion: reduce){#memoTab.live .dot{animation:none}}
 #memo{position:fixed;right:8px;top:60px;bottom:12px;width:328px;max-width:88vw;z-index:950;display:flex;flex-direction:column;background:rgba(255,255,255,.975);border:1px solid #e0e6ee;border-radius:12px;box-shadow:0 10px 34px rgba(16,32,54,.18);transform:translateX(calc(100% + 18px));transition:transform .22s ease;backdrop-filter:blur(3px)}
 #memo.open{transform:none}
 .memo-h{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid #eef1f5;font-size:13.5px}
