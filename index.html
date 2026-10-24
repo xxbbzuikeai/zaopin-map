@@ -6,7 +6,6 @@
 <title>在招厂区位置地图</title>
 <link rel="stylesheet" href="vendor/leaflet.css">
 <link rel="stylesheet" href="css/app.css">
-<link rel="stylesheet" href="css/auth.css">
 <script>window.DP1_API_BASE='https://inappropriate-swan-d8c59977a1019-1514742363.ap-shanghai.app.tcloudbase.com';</script>
 </head>
 <body>
@@ -52,7 +51,7 @@
 </div>
 <button id="memoTab" type="button" title="人员备忘录：记录谁要进哪个厂">人员<span class="n" id="memoTabN">0</span></button>
 <aside id="memo" aria-label="人员备忘录">
-  <div class="memo-h"><b>人员备忘录</b><span class="st" id="memoSt"></span><button id="memoClose" type="button" title="收起（Esc）">×</button></div>
+  <div class="memo-h"><b>人员备忘录</b><span class="st" id="memoSt"></span><button id="memoClose" type="button" title="收起（Esc）"><span class="ar">⟩</span>收起</button></div>
   <div class="memo-form">
     <input id="memoName" placeholder="姓名" autocomplete="off">
     <input id="memoTel" placeholder="电话" autocomplete="off">
@@ -63,7 +62,9 @@
   <div class="memo-list" id="memoList"></div>
 </aside>
 <div id="toast"></div>
-<script src="js/auth.js"></script>
 <script src="vendor/leaflet.js"></script>
+<script src="data/site.js"></script>
+<script src="js/app.js"></script>
+<script src="js/memo.js"></script>
 </body>
 </html>
