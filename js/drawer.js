@@ -9,18 +9,11 @@
   var side = document.getElementById('side');
   var tab = document.getElementById('sideTab');
   var btn = document.getElementById('sideCollapse');
-  var badge = document.getElementById('sideTabN');
   var cnt = document.getElementById('cnt');
   if (!side) return;
 
   var open = true;
   try { open = localStorage.getItem(KEY) !== '0'; } catch (e) { }
-
-  function syncCount() {
-    if (!badge) return;
-    var m = cnt ? String(cnt.textContent || '').match(/\d+/) : null;
-    badge.textContent = m ? m[0] : '';
-  }
 
   function apply(v, save) {
     open = !!v;
@@ -30,7 +23,6 @@
     if (save) { try { localStorage.setItem(KEY, open ? '1' : '0'); } catch (e) { } }
     // 侧栏是覆盖层，地图容器尺寸始终不变 → 这里不需要 invalidateSize，
     // 展开/收起时地图完全不动（不重排、不重绘、不位移）。
-    if (open) syncCount();
   }
 
   if (btn) btn.onclick = function () { apply(false, true); };
