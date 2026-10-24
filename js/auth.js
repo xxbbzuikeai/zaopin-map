@@ -1,5 +1,6 @@
 /* 登录门 + 会话 + 心跳（试用版）；登录成功后才加载 app.js / memo.js */
 (function () {
+  var APP_VER = '20261024a';
   'use strict';
   var booted = false;
 
@@ -116,7 +117,8 @@
   function loadScript(src) {
     return new Promise(function (resolve, reject) {
       var s = document.createElement('script');
-      s.src = src; s.onload = resolve; s.onerror = reject;
+      s.src = src + (src.indexOf('?') >= 0 ? '&' : '?') + 'v=' + APP_VER;
+      s.onload = resolve; s.onerror = reject;
       document.body.appendChild(s);
     });
   }
