@@ -712,7 +712,7 @@ function bindList(){
       if(!isOn(j)){toast('「'+j.name+'」已取消勾选，不参与筛选；如需查看请先勾选复选框');return;}
       activeId=id;markActive();
       map.setView([j.lat,j.lng],Math.max(map.getZoom(),13));
-      pinMarkers[j.id].openPopup();
+      PIND=j.id;pinMarkers[j.id].openPopup();
     };
   });
 }
