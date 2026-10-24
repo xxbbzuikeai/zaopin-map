@@ -6,7 +6,7 @@ header .ttl{font-size:16px;font-weight:700;letter-spacing:.5px}
 header .ttl .sub{font-size:12px;font-weight:400;color:#9db2c8;margin-left:8px}
 header .meta{font-size:12px;color:#9db2c8}
 .wrap{display:flex;height:calc(100% - 52px);width:100%}
-#side{width:340px;flex:0 0 340px;transition:width .22s ease,flex-basis .22s ease;background:#f7f9fb;border-right:1px solid #dde3ea;display:flex;flex-direction:column;overflow:hidden}
+#side{width:340px;flex:0 0 340px;transition:width .28s cubic-bezier(.4,0,.2,1),flex-basis .28s cubic-bezier(.4,0,.2,1);background:#f7f9fb;border-right:1px solid #dde3ea;display:flex;flex-direction:column;overflow:hidden}
 #map{flex:1 1 auto;min-width:0}
 /* 极简底图（无在线底图、也无本地离线瓦片时的兜底）：浅色网格，保证点位/筛选/距离可用 */
 #map.plain{background:#f2f5f8;background-image:linear-gradient(#e4eaf0 1px,transparent 1px),linear-gradient(90deg,#e4eaf0 1px,transparent 1px);background-size:46px 46px}
@@ -178,7 +178,7 @@ body.memo-open #memoTab{opacity:0;pointer-events:none}
 @media (max-width:760px){#memoResize{display:none}}
 
 /* ===== 左侧抽屉：默认展开，点「收起」缩回左边缘，点竖排「筛选」再展开 ===== */
-#side.closed{width:0;flex:0 0 0;border-right:0}
+#side.closed{width:0;flex:0 0 0;border-right-color:transparent}
 .side-top{display:flex;align-items:center;gap:8px;padding:8px 10px 0}
 .side-top .stitle{flex:1 1 auto;font-size:11.5px;letter-spacing:1px;color:#8a97a6}
 #sideCollapse{border:1px solid #dfe6ef;background:#fff;color:#44546a;border-radius:8px;height:24px;
