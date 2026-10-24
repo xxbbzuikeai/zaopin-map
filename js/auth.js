@@ -1,6 +1,6 @@
 /* 登录门 + 会话 + 心跳（试用版）；登录成功后才加载 app.js / memo.js */
 (function () {
-  var APP_VER = '20261024g';
+  var APP_VER = '20261024h';
   'use strict';
   var booted = false;
 
