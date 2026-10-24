@@ -7,7 +7,7 @@
    ============================================================ */
 (function () {
   'use strict';
-  var KEY = 'dp1_memo_v1', OPEN_KEY = 'dp1_memo_open';
+  var KEY = 'dp1_memo_v1', OPEN_KEY = 'dp1_memo_open', W_KEY = 'dp1_memo_w';
   var PEOPLE = [], open = false, el = {}, subscribed = false;
 
   try { PEOPLE = JSON.parse(localStorage.getItem(KEY) || '[]') || []; } catch (e) { PEOPLE = []; }
@@ -157,6 +157,54 @@
     render();
   }
 
+  /* 拖动左边缘调宽度（桌面端）；宽度记忆在 localStorage */
+  function applyWidth(w) {
+    if (!el.panel) return;
+    el.panel.style.width = Math.max(260, Math.min(560, w)) + 'px';
+  }
+
+  function initGrip() {
+    if (!el.panel || document.getElementById('memoResize')) return;
+    var grip = document.createElement('div');
+    grip.id = 'memoResize';
+    grip.title = '按住拖动，调整备忘录宽度';
+    el.panel.appendChild(grip);
+
+    var lastW = 0;
+    try { lastW = parseInt(localStorage.getItem(W_KEY) || '0', 10) || 0; } catch (e) { }
+    if (lastW && window.innerWidth >= 760) applyWidth(lastW);
+
+    grip.addEventListener('mousedown', function (ev) {
+      ev.preventDefault();
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+      function move(e2) { applyWidth(window.innerWidth - e2.clientX - 8); }
+      function up() {
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+        document.removeEventListener('mousemove', move);
+        document.removeEventListener('mouseup', up);
+        var ww = Math.round(parseFloat(el.panel.style.width) || el.panel.offsetWidth || 360);
+        try { localStorage.setItem(W_KEY, String(ww)); } catch (e) { }
+      }
+      document.addEventListener('mousemove', move);
+      document.addEventListener('mouseup', up);
+    });
+  }
+
+  /* 点地图空白处自动收起（点厂点/弹窗/地图控件时不收） */
+  function bindMapClick() {
+    var mapEl = document.getElementById('map');
+    if (!mapEl) return;
+    mapEl.addEventListener('click', function (e) {
+      if (!open) return;
+      var t = e.target;
+      if (t.closest && (t.closest('.leaflet-popup') || t.closest('.leaflet-marker-icon') ||
+        t.closest('.leaflet-control') || t.closest('#memo'))) return;
+      setOpen(false);
+    }, true);
+  }
+
   function setOpen(v) {
     open = !!v;
     if (el.panel) el.panel.classList.toggle('open', open);
@@ -197,6 +245,8 @@
     });
 
     setOpen(open);
+    initGrip();
+    bindMapClick();
     render();
     subscribe();
     var tries = 0, iv = setInterval(function () {
