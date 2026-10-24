@@ -45,10 +45,12 @@
   syncCount();
 
   // 列表条数变化（搜索结果/勾选/切日期）时同步标签上的数字
-  var tries = 0, iv = setInterval(function () {
+  // 账号版是登录后才加载 app.js，这里一直等到 DP1 出现再挂钩
+  var iv = setInterval(function () {
     if (window.DP1 && window.DP1.on) {
       window.DP1.on(syncCount);
+      syncCount();
       clearInterval(iv);
-    } else if (++tries > 40) clearInterval(iv);
-  }, 250);
+    }
+  }, 400);
 })();
