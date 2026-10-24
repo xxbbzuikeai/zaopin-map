@@ -151,3 +151,10 @@ body.memo-open #memoTab{opacity:0;pointer-events:none}
 #side::-webkit-scrollbar-thumb{background:#c3ccd8;border-radius:6px;border:2px solid #eef2f6}
 #side::-webkit-scrollbar-thumb:hover{background:#a9b5c4}
 @media (max-width:760px){#side{overflow-y:auto}}
+
+/* 人员备忘录：左边缘拖动调宽 */
+#memoResize{position:absolute;left:-2px;top:0;bottom:0;width:9px;cursor:col-resize;z-index:3;border-radius:10px 0 0 10px;touch-action:none}
+#memoResize::after{content:'';position:absolute;left:3px;top:50%;margin-top:-16px;width:2px;height:32px;border-radius:2px;background:#cbd6e2;transition:background .15s}
+#memoResize:hover{background:rgba(28,110,214,.10)}
+#memoResize:hover::after{background:#1c7ed6}
+@media (max-width:760px){#memoResize{display:none}}
